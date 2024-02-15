@@ -1,0 +1,5 @@
+unauthorized: 凭证错误
+notFound: 找不到数据
+createMessageFail: 创建消息失败
+updateMessageFail: 更新消息失败
+badGateway: 服务器出现错误。\n请联系管理员查看错误日期。

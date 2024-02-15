@@ -1,0 +1,375 @@
+basePath: /
+definitions:
+  request.MessageCreateUpdateRequest:
+    properties:
+      bigContent:
+        example: 复杂的内容
+        type: string
+      category:
+        example: important
+        type: string
+      content:
+        example: 简单的内容
+        type: string
+      introducerIds:
+        example:
+        - 发给谁
+        items:
+          type: string
+        type: array
+      title:
+        example: 标题
+        type: string
+    required:
+    - bigContent
+    - category
+    - content
+    - introducerIds
+    - title
+    type: object
+  request.MessageDeleteRequest:
+    properties:
+      delete:
+        example: false
+        type: boolean
+      messageId:
+        example: id
+        type: string
+    required:
+    - messageId
+    type: object
+  request.MessageStatusRequest:
+    properties:
+      id:
+        example: "1"
+        type: string
+      status:
+        example: 1
+        maximum: 2
+        minimum: 0
+        type: integer
+    required:
+    - id
+    - status
+    type: object
+  request.ValidationError:
+    properties:
+      field:
+        description: 字段名
+        type: string
+      message:
+        description: 错误消息
+        type: string
+      param:
+        description: 参数
+        type: string
+      type:
+        description: 字段类型
+        type: string
+      value:
+        description: 字段数值
+    type: object
+  response.HTTPError:
+    properties:
+      code:
+        example: 400
+        type: integer
+      message:
+        example: status bad request
+        type: string
+    type: object
+  response.Message:
+    properties:
+      big_content:
+        type: string
+      category:
+        type: string
+      content:
+        type: string
+      created_at:
+        type: string
+      introducer_ids:
+        items:
+          type: string
+        type: array
+      message_id:
+        type: string
+      sender_ids:
+        items:
+          type: string
+        type: array
+      status:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  response.MessageDeleteResponse:
+    properties:
+      delete:
+        description: Delete 表示消息是否永久删除。
+        type: boolean
+      id:
+        description: Id 表示消息的唯一标识符。
+        type: string
+      status:
+        description: Status 表示消息删除操作的状态，用于指示操作是否成功
+        type: boolean
+    type: object
+  response.MessageStatusResponse:
+    properties:
+      id:
+        description: Id 表示消息的唯一标识符。
+        type: string
+      result:
+        description: |-
+          Result 表示消息状态更新操作的结果。
+          true 表示更新成功，false 表示更新失败。
+        type: boolean
+      status:
+        description: Status 表示消息的当前状态。
+        type: integer
+    type: object
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
+host: localhost:1204
+info:
+  contact:
+    email: 822028533@qq.com
+    name: Webb
+    url: https://github.com/webb-l
+  description: 简单又好用的消息服务。快来给你"项目"添加消息功能。
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: https://github.com/webb-l
+  title: 消息系统 API
+  version: "1.0"
+paths:
+  /message:
+    delete:
+      consumes:
+      - application/json
+      description: 根据数组的数据删除消息
+      parameters:
+      - description: 删除的消息
+        in: body
+        name: _
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/request.MessageDeleteRequest'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新后返回的数据
+          schema:
+            items:
+              $ref: '#/definitions/response.MessageDeleteResponse'
+            type: array
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/request.ValidationError'
+        "401":
+          description: 凭证错误
+          schema:
+            $ref: '#/definitions/response.HTTPError'
+        "404":
+          description: 找不到兑换码
+          schema:
+            type: string
+        "502":
+          description: 系统异常
+          schema:
+            type: string
+      security:
+      - BasicAuth: []
+      summary: 删除消息
+      tags:
+      - message
+    get:
+      consumes:
+      - application/json
+      description: 根据用户凭证查询消息
+      parameters:
+      - description: 过滤语句（title = 标题,status = 0|1|2,...）
+        in: query
+        name: filter
+        type: string
+      - description: 排序列（created_at|updated_at|sender_ids|title|content|category|big_content|introducer_ids|status）
+        in: query
+        name: sortColumn
+        type: string
+      - description: 排序类型（asc/desc）
+        in: query
+        name: sortType
+        type: string
+      - description: 查询第几页数据
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 消息信息
+          schema:
+            items:
+              items:
+                $ref: '#/definitions/response.Message'
+              type: array
+            type: array
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/request.ValidationError'
+        "401":
+          description: 凭证错误
+          schema:
+            $ref: '#/definitions/response.HTTPError'
+        "502":
+          description: 系统异常
+          schema:
+            $ref: '#/definitions/response.HTTPError'
+      security:
+      - BasicAuth: []
+      summary: 查询消息
+      tags:
+      - message
+    post:
+      consumes:
+      - application/json
+      description: 创建消息
+      parameters:
+      - description: 创建的数据
+        in: body
+        name: _
+        required: true
+        schema:
+          $ref: '#/definitions/request.MessageCreateUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功
+          schema:
+            $ref: '#/definitions/response.Message'
+        "202":
+          description: 创建失败
+          schema:
+            $ref: '#/definitions/response.HTTPError'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/request.ValidationError'
+        "401":
+          description: 凭证错误
+          schema:
+            $ref: '#/definitions/response.HTTPError'
+        "502":
+          description: 系统异常
+          schema:
+            $ref: '#/definitions/response.HTTPError'
+      security:
+      - BasicAuth: []
+      summary: 创建消息
+      tags:
+      - message
+  /message/{id}:
+    put:
+      consumes:
+      - application/json
+      description: 根据消息id更新消息
+      parameters:
+      - description: 消息id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 更新消息
+        in: body
+        name: _
+        required: true
+        schema:
+          $ref: '#/definitions/request.MessageCreateUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功
+          schema:
+            $ref: '#/definitions/response.Message'
+        "202":
+          description: 更新失败
+          schema:
+            $ref: '#/definitions/response.HTTPError'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/request.ValidationError'
+        "401":
+          description: 凭证错误
+          schema:
+            $ref: '#/definitions/response.HTTPError'
+        "404":
+          description: 找不到数据
+          schema:
+            $ref: '#/definitions/response.HTTPError'
+        "502":
+          description: 系统异常
+          schema:
+            $ref: '#/definitions/response.HTTPError'
+      security:
+      - BasicAuth: []
+      summary: 更新消息
+      tags:
+      - message
+  /message/status:
+    put:
+      consumes:
+      - application/json
+      description: 根据数组的数据更新消息状态
+      parameters:
+      - description: 消息状态
+        in: body
+        name: _
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/request.MessageStatusRequest'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新后返回的数据
+          schema:
+            items:
+              $ref: '#/definitions/response.MessageStatusResponse'
+            type: array
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/request.ValidationError'
+        "401":
+          description: 凭证错误
+          schema:
+            $ref: '#/definitions/response.HTTPError'
+        "502":
+          description: 系统异常
+          schema:
+            $ref: '#/definitions/response.HTTPError'
+      security:
+      - BasicAuth: []
+      summary: 更新状态
+      tags:
+      - message
+securityDefinitions:
+  BasicAuth:
+    type: basic
+swagger: "2.0"

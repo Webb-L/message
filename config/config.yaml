@@ -1,0 +1,38 @@
+app:
+  # 网站标题
+  title: Message
+  # 是否为调试模式
+  debug: true
+  # 网站语言
+  language: zh
+  # 文件存储设置，设置上传文件的存储路径以及路由前缀
+  store:
+    path: ./uploads
+    prefix: uploads
+
+  # 开发环境：本地 EnvLocal / 测试 EnvTest / 生产 EnvProd
+  env: local
+
+  # 日志本地存储路径
+  log:
+    info: logs/info.log
+    error: logs/error.log
+    access: logs/access.log
+
+database:
+  host: 127.0.0.1
+  port: 3306
+  user: message
+  pwd: message
+  name: message
+  max_idle_con: 5
+  max_open_con: 10
+  # params为驱动需要的额外的传参
+  params:
+    character: utf8mb4
+
+api:
+  # 是否开启SwaggerApi
+  test: true
+  # 返回最多数量
+  maxLimit: 15

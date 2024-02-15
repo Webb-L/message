@@ -1,0 +1,31 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+    networks:
+      - default
+    links:
+      - mysql
+    ports:
+      - "1204:1204"
+    depends_on:
+      - mysql
+  mysql:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - default
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+      MYSQL_DATABASE: 'message'
+      MYSQL_USER: 'message'
+      MYSQL_PASSWORD: 'message'
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+volumes:
+  mysql-data:
+networks:
+  default:
