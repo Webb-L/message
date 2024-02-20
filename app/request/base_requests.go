@@ -37,7 +37,7 @@ func validateSliceAndSetContext(ctx *gin.Context, object interface{}, saveKey st
 
 	// 使用 Validate 对象进行参数校验
 	if err := Validate.Var(object, "required,gt=0,dive,required"); err != nil {
-		handlingErrors(ctx, err)
+		HandlingValidateErrors(ctx, err)
 		return false
 	}
 
@@ -62,7 +62,7 @@ func validateStructAndSetContext(ctx *gin.Context, object interface{}, saveKey s
 
 	// 使用 Validate 对象进行参数校验
 	if err := Validate.Struct(object); err != nil {
-		handlingErrors(ctx, err)
+		HandlingValidateErrors(ctx, err)
 		return false
 	}
 
@@ -72,12 +72,12 @@ func validateStructAndSetContext(ctx *gin.Context, object interface{}, saveKey s
 	return true
 }
 
-// handlingErrors 处理错误
-func handlingErrors(ctx *gin.Context, err error) {
+// HandlingValidateErrors 处理错误
+func HandlingValidateErrors(ctx *gin.Context, err error) {
 	// 处理校验错误
 	var invalidValidationError *validator.InvalidValidationError
 	if errors.As(err, &invalidValidationError) {
-		logs.LogError.Errorf("handlingErrors %s", err)
+		logs.LogError.Errorf("HandlingValidateErrors %s", err)
 		response.NewError(
 			ctx,
 			http.StatusBadGateway,

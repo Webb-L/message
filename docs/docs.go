@@ -28,7 +28,7 @@ const docTemplate = `{
             "get": {
                 "security": [
                     {
-                        "BasicAuth": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "根据用户凭证查询消息",
@@ -104,7 +104,7 @@ const docTemplate = `{
             "post": {
                 "security": [
                     {
-                        "BasicAuth": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "创建消息",
@@ -165,7 +165,7 @@ const docTemplate = `{
             "delete": {
                 "security": [
                     {
-                        "BasicAuth": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "根据数组的数据删除消息",
@@ -234,7 +234,7 @@ const docTemplate = `{
             "put": {
                 "security": [
                     {
-                        "BasicAuth": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "根据数组的数据更新消息状态",
@@ -297,7 +297,7 @@ const docTemplate = `{
             "put": {
                 "security": [
                     {
-                        "BasicAuth": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "根据消息id更新消息",
@@ -484,40 +484,58 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "big_content": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "复杂的内容"
                 },
                 "category": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "important"
                 },
                 "content": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "简单的内容"
                 },
                 "created_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2024-02-15T05:49:57Z"
                 },
                 "introducer_ids": {
                     "type": "array",
                     "items": {
                         "type": "string"
-                    }
+                    },
+                    "example": [
+                        "fc64c1a807c2e69655f68d31e5caa35d",
+                        "70c021d35ce60436c115b20b5cf583d0",
+                        "..."
+                    ]
                 },
                 "message_id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "7e55cb38290f49ee2b0e9cfd2adf13e4"
                 },
                 "sender_ids": {
                     "type": "array",
                     "items": {
                         "type": "string"
-                    }
+                    },
+                    "example": [
+                        "2f14ec370621a8be08c8f0ece459e7e0",
+                        "22798c5dcd6e5b66c8660c447010d49d",
+                        "..."
+                    ]
                 },
                 "status": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 0
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "标题"
                 },
                 "updated_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2024-02-15T05:49:57Z"
                 }
             }
         },
@@ -557,8 +575,10 @@ const docTemplate = `{
         }
     },
     "securityDefinitions": {
-        "BasicAuth": {
-            "type": "basic"
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     },
     "externalDocs": {

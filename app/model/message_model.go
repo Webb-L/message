@@ -24,12 +24,5 @@ type Message struct {
 	Status        uint8       `gorm:"type:tinyint;default:0;comment:消息阅读状态"`
 }
 
-// MessageToken 查询消息的凭证
-type MessageToken struct {
-	gorm.Model `json:"_"`
-	AuthId     string `json:"auth_id,omitempty" gorm:"type:varchar(32);index;unique;comment:"` // User字段长度为32
-	Token      string `json:"token,omitempty" gorm:"type:varchar(255)"`                        // Token字段长度为255
-}
-
 type MessageCategory struct {
 }

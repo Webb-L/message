@@ -2,7 +2,6 @@ package request
 
 import (
 	"github.com/gin-gonic/gin"
-	"message/app/model"
 	"message/logs"
 	"strings"
 )
@@ -26,7 +25,7 @@ func ValidateMessageRequestMiddleware() gin.HandlerFunc {
 		// 从上下文中获取 token
 		token, _ := ctx.Get("token")
 		// 将 token 转换为 MessageToken 类型
-		messageToken := token.(model.MessageToken)
+		messageToken := token.(string)
 
 		message := &MessageRequest{}
 		if !validateStructAndSetContext(
@@ -34,7 +33,7 @@ func ValidateMessageRequestMiddleware() gin.HandlerFunc {
 			message,
 			"message",
 		) {
-			logs.LogInfo.Infof("ValidateMessageRequestMiddleware-参数错误 %s", messageToken.AuthId)
+			logs.LogInfo.Infof("ValidateMessageRequestMiddleware-参数错误 %s", messageToken)
 			return
 		}
 
@@ -68,15 +67,15 @@ func ValidateMessageRequestMiddleware() gin.HandlerFunc {
 			}
 
 			if err := Validate.Var(&filters, "required,gt=0,dive,required"); err != nil {
-				handlingErrors(ctx, err)
-				logs.LogInfo.Infof("ValidateMessageRequestMiddleware-失败-查询过滤语法 %s", messageToken.AuthId)
+				HandlingValidateErrors(ctx, err)
+				logs.LogInfo.Infof("ValidateMessageRequestMiddleware-失败-查询过滤语法 %s", messageToken)
 				return
 			}
 			ctx.Set("messageFilters", &filters)
 			ctx.Next()
 		}
 
-		logs.LogInfo.Infof("ValidateMessageRequestMiddleware-成功 %s", messageToken.AuthId)
+		logs.LogInfo.Infof("ValidateMessageRequestMiddleware-成功 %s", messageToken)
 	}
 }
 
@@ -94,17 +93,17 @@ func ValidateMessageCreateUpdateRequestMiddleware() gin.HandlerFunc {
 		// 从上下文中获取 token
 		token, _ := ctx.Get("token")
 		// 将 token 转换为 MessageToken 类型
-		messageToken := token.(model.MessageToken)
+		messageToken := token.(string)
 
 		if !validateStructAndSetContext(
 			ctx,
 			&MessageCreateUpdateRequest{},
 			"messageCreateUpdate",
 		) {
-			logs.LogInfo.Infof("ValidateMessageCreateUpdateRequestMiddleware-失败-参数错误 %s", messageToken.AuthId)
+			logs.LogInfo.Infof("ValidateMessageCreateUpdateRequestMiddleware-失败-参数错误 %s", messageToken)
 			return
 		}
-		logs.LogInfo.Infof("ValidateMessageCreateUpdateRequestMiddleware-成功 %s", messageToken.AuthId)
+		logs.LogInfo.Infof("ValidateMessageCreateUpdateRequestMiddleware-成功 %s", messageToken)
 	}
 }
 
@@ -119,17 +118,17 @@ func ValidateMessageStatusRequestMiddleware() gin.HandlerFunc {
 		// 从上下文中获取 token
 		token, _ := ctx.Get("token")
 		// 将 token 转换为 MessageToken 类型
-		messageToken := token.(model.MessageToken)
+		messageToken := token.(string)
 
 		if !validateSliceAndSetContext(
 			ctx,
 			&[]MessageStatusRequest{},
 			"messageStatus",
 		) {
-			logs.LogInfo.Infof("ValidateMessageStatusRequestMiddleware-失败-参数错误 %s", messageToken.AuthId)
+			logs.LogInfo.Infof("ValidateMessageStatusRequestMiddleware-失败-参数错误 %s", messageToken)
 			return
 		}
-		logs.LogInfo.Infof("ValidateMessageStatusRequestMiddleware-成功 %s", messageToken.AuthId)
+		logs.LogInfo.Infof("ValidateMessageStatusRequestMiddleware-成功 %s", messageToken)
 	}
 }
 
@@ -144,17 +143,17 @@ func ValidateMessageDeleteRequestMiddleware() gin.HandlerFunc {
 		// 从上下文中获取 token
 		token, _ := ctx.Get("token")
 		// 将 token 转换为 MessageToken 类型
-		messageToken := token.(model.MessageToken)
+		messageToken := token.(string)
 
 		if !validateSliceAndSetContext(
 			ctx,
 			&[]MessageDeleteRequest{},
 			"messageDelete",
 		) {
-			logs.LogInfo.Infof("ValidateMessageDeleteRequestMiddleware-失败-参数错误 %s", messageToken.AuthId)
+			logs.LogInfo.Infof("ValidateMessageDeleteRequestMiddleware-失败-参数错误 %s", messageToken)
 			return
 		}
-		logs.LogInfo.Infof("ValidateMessageDeleteRequestMiddleware-成功 %s", messageToken.AuthId)
+		logs.LogInfo.Infof("ValidateMessageDeleteRequestMiddleware-成功 %s", messageToken)
 	}
 }
 
@@ -164,16 +163,16 @@ func ValidateMessageIdRequestMiddleware() gin.HandlerFunc {
 		// 从上下文中获取 token
 		token, _ := ctx.Get("token")
 		// 将 token 转换为 MessageToken 类型
-		messageToken := token.(model.MessageToken)
+		messageToken := token.(string)
 
 		err := Validate.Var(ctx.Param("id"), "required,len=32")
 		if err != nil {
-			handlingErrors(ctx, err)
-			logs.LogInfo.Infof("ValidateMessageIdRequestMiddleware-失败-参数错误 %s", messageToken.AuthId)
+			HandlingValidateErrors(ctx, err)
+			logs.LogInfo.Infof("ValidateMessageIdRequestMiddleware-失败-参数错误 %s", messageToken)
 			return
 		}
 
 		ctx.Next()
-		logs.LogInfo.Infof("ValidateMessageIdRequestMiddleware-成功 %s", messageToken.AuthId)
+		logs.LogInfo.Infof("ValidateMessageIdRequestMiddleware-成功 %s", messageToken)
 	}
 }

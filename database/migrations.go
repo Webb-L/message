@@ -19,8 +19,6 @@ func InitMigration() {
 	err := DB.Set("gorm:table_options", dbConfig).AutoMigrate(
 		// 迁移消息模型
 		&model.Message{},
-		// 迁移消息令牌模型
-		&model.MessageToken{},
 	)
 	if err != nil {
 		// 输出迁移错误信息

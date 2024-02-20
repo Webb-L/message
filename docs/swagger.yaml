@@ -81,28 +81,44 @@ definitions:
   response.Message:
     properties:
       big_content:
+        example: 复杂的内容
         type: string
       category:
+        example: important
         type: string
       content:
+        example: 简单的内容
         type: string
       created_at:
+        example: "2024-02-15T05:49:57Z"
         type: string
       introducer_ids:
+        example:
+        - fc64c1a807c2e69655f68d31e5caa35d
+        - 70c021d35ce60436c115b20b5cf583d0
+        - '...'
         items:
           type: string
         type: array
       message_id:
+        example: 7e55cb38290f49ee2b0e9cfd2adf13e4
         type: string
       sender_ids:
+        example:
+        - 2f14ec370621a8be08c8f0ece459e7e0
+        - 22798c5dcd6e5b66c8660c447010d49d
+        - '...'
         items:
           type: string
         type: array
       status:
+        example: 0
         type: integer
       title:
+        example: 标题
         type: string
       updated_at:
+        example: "2024-02-15T05:49:57Z"
         type: string
     type: object
   response.MessageDeleteResponse:
@@ -188,7 +204,7 @@ paths:
           schema:
             type: string
       security:
-      - BasicAuth: []
+      - ApiKeyAuth: []
       summary: 删除消息
       tags:
       - message
@@ -237,7 +253,7 @@ paths:
           schema:
             $ref: '#/definitions/response.HTTPError'
       security:
-      - BasicAuth: []
+      - ApiKeyAuth: []
       summary: 查询消息
       tags:
       - message
@@ -276,7 +292,7 @@ paths:
           schema:
             $ref: '#/definitions/response.HTTPError'
       security:
-      - BasicAuth: []
+      - ApiKeyAuth: []
       summary: 创建消息
       tags:
       - message
@@ -325,7 +341,7 @@ paths:
           schema:
             $ref: '#/definitions/response.HTTPError'
       security:
-      - BasicAuth: []
+      - ApiKeyAuth: []
       summary: 更新消息
       tags:
       - message
@@ -365,11 +381,13 @@ paths:
           schema:
             $ref: '#/definitions/response.HTTPError'
       security:
-      - BasicAuth: []
+      - ApiKeyAuth: []
       summary: 更新状态
       tags:
       - message
 securityDefinitions:
-  BasicAuth:
-    type: basic
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

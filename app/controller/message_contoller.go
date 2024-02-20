@@ -3,7 +3,6 @@ package controller
 import (
 	lang "github.com/gin-contrib/i18n"
 	"github.com/gin-gonic/gin"
-	"message/app/model"
 	"message/app/repository"
 	"message/app/request"
 	"message/app/response"
@@ -18,7 +17,7 @@ import (
 //	@Tags			message
 //	@Accept			json
 //	@Produce		json
-//	@Security		BasicAuth
+//	@Security		ApiKeyAuth
 //	@Param			filter		query		string					false	"过滤语句（title = 标题,status = 0|1|2,...）"
 //	@Param			sortColumn	query		string					false	"排序列（created_at|updated_at|sender_ids|title|content|category|big_content|introducer_ids|status）"
 //	@Param			sortType	query		string					false	"排序类型（asc/desc）"
@@ -47,7 +46,7 @@ func MessageIndex(ctx *gin.Context) {
 	}
 
 	// 将 token 转换为 MessageToken 类型
-	messageToken := token.(model.MessageToken)
+	messageToken := token.(string)
 	// 将 message 转换为 MessageRequest 类型
 	messageRequest := message.(*request.MessageRequest)
 
@@ -63,7 +62,7 @@ func MessageIndex(ctx *gin.Context) {
 		}
 	}
 
-	logs.LogInfo.Infof("MessageIndex %v %s", messageRequest, messageToken.AuthId)
+	logs.LogInfo.Infof("MessageIndex %v %s", messageRequest, messageToken)
 
 	// 返回查询结果
 	ctx.JSON(
@@ -83,7 +82,7 @@ func MessageIndex(ctx *gin.Context) {
 //	@Tags			message
 //	@Accept			json
 //	@Produce		json
-//	@Security		BasicAuth
+//	@Security		ApiKeyAuth
 //	@Param			_	body		request.MessageCreateUpdateRequest	true	"创建的数据"
 //	@Success		200	{object}	response.Message					"创建成功"
 //	@Success		202	{object}	response.HTTPError					"创建失败"
@@ -108,7 +107,7 @@ func MessageCreate(ctx *gin.Context) {
 	}
 
 	// 将 token 转换为 MessageToken 类型
-	messageToken := token.(model.MessageToken)
+	messageToken := token.(string)
 	// 将 messageCreateUpdate 转换为 MessageCreateUpdateRequest 类型
 	messageCreateRequest := messageCreate.(*request.MessageCreateUpdateRequest)
 
@@ -126,11 +125,11 @@ func MessageCreate(ctx *gin.Context) {
 			lang.MustGetMessage(ctx, "createMessageFail"),
 		)
 
-		logs.LogInfo.Infof("MessageCreate-失败 %s %s", err, messageToken.AuthId)
+		logs.LogInfo.Infof("MessageCreate-失败 %s %s", err, messageToken)
 		return
 	}
 
-	logs.LogInfo.Infof("MessageCreate-成功 %s", messageToken.AuthId)
+	logs.LogInfo.Infof("MessageCreate-成功 %s", messageToken)
 
 	// 返回创建成功的消息
 	ctx.JSON(http.StatusOK, message)
@@ -143,7 +142,7 @@ func MessageCreate(ctx *gin.Context) {
 //	@Tags			message
 //	@Accept			json
 //	@Produce		json
-//	@Security		BasicAuth
+//	@Security		ApiKeyAuth
 //	@Param			id	path		string								true	"消息id"
 //	@Param			_	body		request.MessageCreateUpdateRequest	true	"更新消息"
 //	@Success		200	{object}	response.Message					"更新成功"
@@ -170,13 +169,13 @@ func MessageUpdate(ctx *gin.Context) {
 	}
 
 	// 将 token 转换为 MessageToken 类型
-	messageToken := token.(model.MessageToken)
+	messageToken := token.(string)
 	// 将 messageCreateUpdate 转换为 MessageCreateUpdateRequest 类型
 	messageUpdateRequest := messageUpdate.(*request.MessageCreateUpdateRequest)
 
 	// 根据id查询消息
 	oldMessage := repository.QueryMessageById(
-		messageToken.AuthId,
+		messageToken,
 		ctx.Param("id"),
 	)
 
@@ -203,11 +202,11 @@ func MessageUpdate(ctx *gin.Context) {
 			lang.MustGetMessage(ctx, "updateMessageFail"),
 		)
 
-		logs.LogInfo.Infof("MessageUpdate-失败 %s %s", err, messageToken.AuthId)
+		logs.LogInfo.Infof("MessageUpdate-失败 %s %s", err, messageToken)
 		return
 	}
 
-	logs.LogInfo.Infof("MessageUpdate-成功 %s", messageToken.AuthId)
+	logs.LogInfo.Infof("MessageUpdate-成功 %s", messageToken)
 
 	// 返回更新成功后的消息
 	ctx.JSON(http.StatusOK, messageNew)
@@ -220,7 +219,7 @@ func MessageUpdate(ctx *gin.Context) {
 //	@Tags			message
 //	@Accept			json
 //	@Produce		json
-//	@Security		BasicAuth
+//	@Security		ApiKeyAuth
 //	@Param			_	body		[]request.MessageStatusRequest		true	"消息状态"
 //	@Success		200	{object}	[]response.MessageStatusResponse	"更新后返回的数据"
 //	@Failure		400	{object}	request.ValidationError				"请求参数错误"
@@ -244,11 +243,11 @@ func MessageUpdateStatus(ctx *gin.Context) {
 	}
 
 	// 将 token 转换为 MessageToken 类型
-	messageToken := token.(model.MessageToken)
+	messageToken := token.(string)
 	// 将 messageStatus 转换为 []MessageStatusRequest 类型
 	messageStatusRequest := messageStatus.(*[]request.MessageStatusRequest)
 
-	logs.LogInfo.Infof("MessageUpdateStatus %v %s", messageStatusRequest, messageToken.AuthId)
+	logs.LogInfo.Infof("MessageUpdateStatus %v %s", messageStatusRequest, messageToken)
 
 	// 更新消息状态，并返回更新后的结果
 	ctx.JSON(
@@ -267,7 +266,7 @@ func MessageUpdateStatus(ctx *gin.Context) {
 //	@Tags			message
 //	@Accept			json
 //	@Produce		json
-//	@Security		BasicAuth
+//	@Security		ApiKeyAuth
 //	@Param			_	body		[]request.MessageDeleteRequest		true	"删除的消息"
 //	@Success		200	{object}	[]response.MessageDeleteResponse	"更新后返回的数据"
 //	@Failure		400	{object}	request.ValidationError				"请求参数错误"
@@ -292,11 +291,11 @@ func MessageDelete(ctx *gin.Context) {
 	}
 
 	// 将 token 转换为 MessageToken 类型
-	messageToken := token.(model.MessageToken)
+	messageToken := token.(string)
 	// 将 messageDelete 转换为 []MessageDeleteRequest 类型
 	messageDeleteRequests := messageDelete.(*[]request.MessageDeleteRequest)
 
-	logs.LogInfo.Infof("MessageDelete %v %s", messageDeleteRequests, messageToken.AuthId)
+	logs.LogInfo.Infof("MessageDelete %v %s", messageDeleteRequests, messageToken)
 
 	// 删除消息，并返回删除结果
 	ctx.JSON(

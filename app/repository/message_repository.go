@@ -15,7 +15,7 @@ import (
 // QueryMessagesByMessageTokenMessageRequest 根据消息凭证和消息请求查询消息
 func QueryMessagesByMessageTokenMessageRequest(
 	// 消息凭证
-	token model.MessageToken,
+	token string,
 	// 消息请求参数
 	messageRequest *request.MessageRequest,
 	// 消息过滤器
@@ -29,7 +29,7 @@ func QueryMessagesByMessageTokenMessageRequest(
 	query.Where(
 		query.Where(
 			"introducer_ids LIKE ?",
-			fmt.Sprintf("%%%s%%", token.AuthId),
+			fmt.Sprintf("%%%s%%", token),
 		).Or("introducer_ids = ?", ""),
 	)
 
@@ -84,7 +84,7 @@ func QueryMessagesByMessageTokenMessageRequest(
 
 // CreateMessage 创建一条新消息
 func CreateMessage(
-	token model.MessageToken,
+	token string,
 	createMessage *request.MessageCreateUpdateRequest,
 ) (*response.Message, error) {
 	messageId := utils.BuildMessageId()
@@ -93,7 +93,7 @@ func CreateMessage(
 		// 生成消息 ID
 		MessageId: messageId,
 		// 设置消息的发送者 ID
-		SenderIds: []string{token.AuthId},
+		SenderIds: []string{token},
 		// 设置消息标题
 		Title: createMessage.Title,
 		// 设置消息内容
@@ -150,7 +150,7 @@ func UpdateMessage(
 // UpdateMessageStatus 更新消息状态
 func UpdateMessageStatus(
 	// 消息凭证
-	token model.MessageToken,
+	token string,
 	// 要更新的状态请求切片
 	status *[]request.MessageStatusRequest,
 ) []response.MessageStatusResponse {
@@ -162,7 +162,7 @@ func UpdateMessageStatus(
 		// 对model.Message模型执行更新操作，设置新的状态
 		// 使用LIKE查询匹配introducer_ids，并确保message_id与AuthId相符
 		result := database.DB.Model(&model.Message{}).
-			Where("introducer_ids LIKE ?", fmt.Sprintf("%%%s%%", token.AuthId)).
+			Where("introducer_ids LIKE ?", fmt.Sprintf("%%%s%%", token)).
 			Where("message_id = ?", statusRequest.Id).
 			Update("status", statusRequest.Status)
 
@@ -206,7 +206,7 @@ func QueryMessageById(
 // DeleteMessagesById 根据消息 ID 批量删除消息
 func DeleteMessagesById(
 	// 消息凭证
-	token model.MessageToken,
+	token string,
 	// 要删除的消息请求切片
 	deleteRequests *[]request.MessageDeleteRequest,
 ) []response.MessageDeleteResponse {
@@ -226,13 +226,13 @@ func DeleteMessagesById(
 
 	// 物理删除要删除的消息
 	database.DB.Unscoped().
-		Where("sender_ids LIKE ?", fmt.Sprintf("%%%s%%", token.AuthId)).
+		Where("sender_ids LIKE ?", fmt.Sprintf("%%%s%%", token)).
 		Where("message_id in ?", deletes).
 		Delete(&model.Message{})
 
 	// 软删除要软删除的消息
 	database.DB.
-		Where("sender_ids LIKE ?", fmt.Sprintf("%%%s%%", token.AuthId)).
+		Where("sender_ids LIKE ?", fmt.Sprintf("%%%s%%", token)).
 		Where("message_id in ?", softDeletes).
 		Delete(&model.Message{})
 
@@ -240,14 +240,14 @@ func DeleteMessagesById(
 	var failDeletes []string
 	database.DB.
 		Select("message_id").
-		Where("sender_ids LIKE ?", fmt.Sprintf("%%%s%%", token.AuthId)).
+		Where("sender_ids LIKE ?", fmt.Sprintf("%%%s%%", token)).
 		Where("message_id in ?", softDeletes).Find(&failDeletes)
 
 	// 存储软删除失败的消息 ID
 	var failSoftDeletes []string
 	database.DB.
 		Select("message_id").
-		Where("sender_ids LIKE ?", fmt.Sprintf("%%%s%%", token.AuthId)).
+		Where("sender_ids LIKE ?", fmt.Sprintf("%%%s%%", token)).
 		Where("message_id in ?", softDeletes).Find(&failSoftDeletes)
 
 	// 存储删除操作的结果切片

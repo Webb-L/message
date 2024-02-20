@@ -21,6 +21,10 @@ type ServiceConfig struct {
 			Error  string `yaml:"error"`
 			Access string `yaml:"access"`
 		} `yaml:"log"`
+		Verify struct {
+			Table  string `yaml:"table"`
+			Column string `yaml:"column"`
+		} `yaml:"verify"`
 	} `yaml:"app"`
 	Database struct {
 		Host       string `yaml:"host"`

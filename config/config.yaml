@@ -19,6 +19,11 @@ app:
     error: logs/error.log
     access: logs/access.log
 
+  # 验证的信息
+  verify:
+    table: user
+    column: message_token
+
 database:
   host: 127.0.0.1
   port: 3306
