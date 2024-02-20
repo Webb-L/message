@@ -40,7 +40,7 @@ func ValidateMessageRequestMiddleware() gin.HandlerFunc {
 		if message.Filter != "" {
 			var filters []MessageFilterRequest
 			for _, filterStr := range strings.Split(message.Filter, ",") {
-				filter := strings.Split(filterStr, " ")
+				filter := strings.SplitN(filterStr, " ", 3)
 				switch len(filter) {
 				case 1:
 					filters = append(filters, MessageFilterRequest{
